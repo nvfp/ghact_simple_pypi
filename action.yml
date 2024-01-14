@@ -1,0 +1,27 @@
+# inputs:
+#   version:
+#     description: make sure it's correct.
+#     required: true
+#   python_ver:
+#     description: Python version used for building.
+#     required: false
+#     default: '3.10'  # TODO: currently works best with version >=3.10
+  
+runs:
+  using: composite
+  steps:
+    - uses: nvfp/ghact-dirtree@main
+      with:
+        dir: .
+
+    - run: pip install build==1.0.3 twine==4.0.2
+    - run: python -m build
+
+    - uses: nvfp/ghact-dirtree@main
+      with:
+        dir: .
+
+    - run: twine upload dist/*
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
